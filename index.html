@@ -1,1 +1,83 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>AgroGestor</title><link rel='stylesheet' href='style.css'></head><body><h1>AgroGestor</h1><script src='script.js'></script></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgroGestor</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <h1>🌱 AgroGestor</h1>
+    <p>Tecnologia que fortalece o campo</p>
+</header>
+
+<div class="container">
+
+    <div class="card login">
+        <h2>Login Administrador</h2>
+
+        <input type="text" id="user" placeholder="Usuário">
+
+        <input type="password" id="pass" placeholder="Senha">
+
+        <button onclick="login()">
+            Entrar
+        </button>
+
+        <p class="info">
+            Usuário: admin | Senha: 1234
+        </p>
+    </div>
+
+    <div class="card" id="painel">
+
+        <h2>Dashboard</h2>
+
+        <div class="stats">
+            <div class="box">
+                <h3>Produção Total</h3>
+                <p id="prod">0 kg</p>
+            </div>
+
+            <div class="box">
+                <h3>Receita Estimada</h3>
+                <p id="rec">R$ 0,00</p>
+            </div>
+        </div>
+
+        <h2>Cadastro de Produção</h2>
+
+        <input
+        type="text"
+        id="cultura"
+        placeholder="Cultura (Tomate, Milho...)">
+
+        <input
+        type="number"
+        id="qtd"
+        placeholder="Quantidade">
+
+        <input
+        type="number"
+        id="preco"
+        placeholder="Preço por Kg">
+
+        <button onclick="add()">
+            Salvar Produção
+        </button>
+
+        <h2>Produções Registradas</h2>
+
+        <ul id="lista"></ul>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
