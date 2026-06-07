@@ -1,134 +1,341 @@
-let dados =
-JSON.parse(localStorage.getItem("dados")) || [];
+// ============================
+// AGROCONECTA 2.0
+// ============================
 
-function login(){
+let produtos =
+JSON.parse(localStorage.getItem("produtos")) || [];
 
-const usuario =
-document.getElementById("user").value;
+let carrinho = [];
 
-const senha =
-document.getElementById("pass").value;
+// ============================
+// LOGIN
+// ============================
 
-if(usuario === "admin" && senha === "1234"){
+function mostrarLoginProdutor() {
+    document.getElementById("loginProdutor").style.display = "flex";
+}
 
-document.getElementById("painel")
-.style.display = "block";
+function mostrarLoginComprador() {
+    document.getElementById("loginComprador").style.display = "flex";
+}
 
-}else{
+function fecharLogin() {
+    document.getElementById("loginProdutor").style.display = "none";
+    document.getElementById("loginComprador").style.display = "none";
+}
 
-alert("Usuário: admin | Senha: 1234");
+function loginProdutor() {
+
+    const usuario =
+    document.getElementById("usuarioProdutor").value;
+
+    const senha =
+    document.getElementById("senhaProdutor").value;
+
+    if(usuario && senha){
+
+        alert("Login realizado com sucesso!");
+
+        fecharLogin();
+
+        document
+        .getElementById("dashboard")
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+
+    }else{
+
+        alert("Preencha usuário e senha");
+
+    }
 
 }
 
+function loginComprador(){
+
+    const usuario =
+    document.getElementById("usuarioComprador").value;
+
+    const senha =
+    document.getElementById("senhaComprador").value;
+
+    if(usuario && senha){
+
+        alert("Bem-vindo!");
+
+        fecharLogin();
+
+        document
+        .getElementById("produtos")
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+
+    }else{
+
+        alert("Preencha usuário e senha");
+
+    }
+
 }
 
-function salvar(){
+// ============================
+// PRODUTOS
+// ============================
 
-localStorage.setItem(
-"dados",
-JSON.stringify(dados)
-);
+function salvarProdutos(){
+
+    localStorage.setItem(
+        "produtos",
+        JSON.stringify(produtos)
+    );
 
 }
+
+function cadastrarProduto(){
+
+    const nome =
+    document.getElementById("nomeProduto").value;
+
+    const preco =
+    Number(
+        document.getElementById("precoProduto").value
+    );
+
+    const quantidade =
+    Number(
+        document.getElementById("quantidadeProduto").value
+    );
+
+    const categoria =
+    document.getElementById("categoriaProduto").value;
+
+    if(
+        !nome ||
+        !preco ||
+        !quantidade ||
+        !categoria
+    ){
+        alert("Preencha todos os campos");
+        return;
+    }
+
+    produtos.push({
+        nome,
+        preco,
+        quantidade,
+        categoria
+    });
+
+    salvarProdutos();
+
+    renderizarProdutos();
+
+    atualizarDashboard();
+
+    document.getElementById("nomeProduto").value = "";
+    document.getElementById("precoProduto").value = "";
+    document.getElementById("quantidadeProduto").value = "";
+    document.getElementById("categoriaProduto").value = "";
+
+    alert("Produto cadastrado!");
+}
+
+// ============================
+// LISTAGEM
+// ============================
+
+function renderizarProdutos(lista = produtos){
+
+    const container =
+    document.getElementById("listaProdutos");
+
+    container.innerHTML = "";
+
+    lista.forEach((produto,index)=>{
+
+        container.innerHTML += `
+
+        <div class="produto-card">
+
+            <h3>${produto.nome}</h3>
+
+            <p>
+            Categoria:
+            ${produto.categoria}
+            </p>
+
+            <p>
+            Quantidade:
+            ${produto.quantidade}
+            </p>
+
+            <p>
+            Preço:
+            R$ ${produto.preco.toFixed(2)}
+            </p>
+
+            <button
+            onclick="adicionarCarrinho(${index})">
+
+            Adicionar ao Carrinho
+
+            </button>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+// ============================
+// PESQUISA
+// ============================
+
+function pesquisarProduto(){
+
+    const texto =
+    document
+    .getElementById("pesquisa")
+    .value
+    .toLowerCase();
+
+    const filtrados =
+    produtos.filter(produto =>
+
+        produto.nome
+        .toLowerCase()
+        .includes(texto)
+
+    );
+
+    renderizarProdutos(filtrados);
+
+}
+
+// ============================
+// CARRINHO
+// ============================
+
+function adicionarCarrinho(index){
+
+    carrinho.push(produtos[index]);
+
+    renderizarCarrinho();
+
+}
+
+function renderizarCarrinho(){
+
+    const area =
+    document.getElementById("itensCarrinho");
+
+    area.innerHTML = "";
+
+    let total = 0;
+
+    carrinho.forEach(item=>{
+
+        total += item.preco;
+
+        area.innerHTML += `
+
+        <div class="item-carrinho">
+
+            <strong>
+            ${item.nome}
+            </strong>
+
+            <p>
+            R$ ${item.preco.toFixed(2)}
+            </p>
+
+        </div>
+
+        `;
+
+    });
+
+    document
+    .getElementById("valorTotal")
+    .innerText =
+
+    "Total: R$ " +
+    total.toFixed(2);
+
+}
+
+function finalizarCompra(){
+
+    if(carrinho.length === 0){
+
+        alert("Carrinho vazio");
+
+        return;
+
+    }
+
+    alert(
+        "Compra simulada com sucesso!"
+    );
+
+    carrinho = [];
+
+    renderizarCarrinho();
+
+}
+
+// ============================
+// DASHBOARD
+// ============================
 
 function atualizarDashboard(){
 
-let producao = 0;
-let receita = 0;
+    let totalProdutos =
+    produtos.length;
 
-dados.forEach(item => {
+    let estoque = 0;
 
-producao += item.qtd;
+    let receita = 0;
 
-receita += item.qtd * item.preco;
+    produtos.forEach(produto=>{
 
-});
+        estoque += produto.quantidade;
 
-document.getElementById("prod")
-.innerText = producao + " kg";
+        receita +=
+        produto.preco *
+        produto.quantidade;
 
-document.getElementById("rec")
-.innerText = "R$ " + receita.toFixed(2);
+    });
+
+    document
+    .getElementById("totalProdutos")
+    .innerText =
+    totalProdutos;
+
+    document
+    .getElementById("estoqueTotal")
+    .innerText =
+    estoque;
+
+    document
+    .getElementById("receitaTotal")
+    .innerText =
+
+    "R$ " +
+    receita.toFixed(2);
 
 }
 
-function renderizar(){
+// ============================
+// INICIALIZAÇÃO
+// ============================
 
-const lista =
-document.getElementById("lista");
-
-lista.innerHTML = "";
-
-dados.forEach((item,index)=>{
-
-const li =
-document.createElement("li");
-
-li.innerHTML = `
-<div>
-<strong>${item.cultura}</strong><br>
-Quantidade: ${item.qtd} kg<br>
-Preço: R$ ${item.preco}
-</div>
-
-<button
-class="excluir"
-onclick="remover(${index})">
-Excluir
-</button>
-`;
-
-lista.appendChild(li);
-
-});
+renderizarProdutos();
 
 atualizarDashboard();
 
-}
-
-function add(){
-
-const cultura =
-document.getElementById("cultura").value;
-
-const qtd =
-Number(document.getElementById("qtd").value);
-
-const preco =
-Number(document.getElementById("preco").value);
-
-if(!cultura || !qtd || !preco){
-
-alert("Preencha todos os campos");
-
-return;
-
-}
-
-dados.push({
-cultura,
-qtd,
-preco
-});
-
-salvar();
-
-renderizar();
-
-document.getElementById("cultura").value="";
-document.getElementById("qtd").value="";
-document.getElementById("preco").value="";
-
-}
-
-function remover(index){
-
-dados.splice(index,1);
-
-salvar();
-
-renderizar();
-
-}
-
-renderizar();
+renderizarCarrinho();
